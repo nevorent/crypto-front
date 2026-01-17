@@ -1,0 +1,29 @@
+<div class="sidebar-container flex flex-col h-full">
+    <div class="sidebar-header">
+    <mat-form-field class="full-width density-sm">
+        <mat-label>Search Users</mat-label>
+        <input matInput 
+                [(ngModel)]="searchTerm" 
+                (ngModelChange)="filterList()" 
+                placeholder="Name or Email">
+        <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+    </div>
+
+    <div class="sidebar-list">
+    <mat-nav-list>
+        <mat-list-item *ngFor="let user of filteredUsers" 
+            (click)="selectUser(user)"
+            [class.active]="selectedUserId === user.id">
+        <mat-icon matListItemIcon>person</mat-icon>
+        <div matListItemTitle>{{ user.username }}</div>
+        <div matListItemLine>{{ user.email }}</div>
+        </mat-list-item>
+        
+        <div *ngIf="filteredUsers.length === 0" class="empty-state">
+        No matches found.
+        </div>
+    </mat-nav-list>
+    </div>
+
+</div>

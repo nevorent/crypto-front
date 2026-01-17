@@ -1,0 +1,70 @@
+<div class="profile-container mx-40 my-20">
+
+  <mat-card class="profile-card">
+    <div class="profile-header-bg"></div> <mat-card-header class="profile-header">
+      <div mat-card-avatar class="avatar-placeholder">
+        <mat-icon>person</mat-icon>
+      </div>
+      <mat-card-title>{{ username }}</mat-card-title>
+      <mat-card-subtitle>{{ email }}</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content class="profile-details">
+      
+      <div class="detail-row">
+        <span class="label">Status:</span>
+        <mat-chip-set>
+          <mat-chip [color]="isActive ? 'primary' : 'warn'" selected>
+            {{ isActive ? 'Active' : 'Inactive' }}
+          </mat-chip>
+        </mat-chip-set>
+      </div>
+
+      <div class="detail-row">
+        <span class="label">Member Since:</span>
+        <span class="value">{{ createdAt | date:'mediumDate' }}</span>
+      </div>
+
+    </mat-card-content>
+
+    <mat-divider></mat-divider>
+
+    <mat-card-actions class="flex justify-evenly">
+      <button mat-button color="warn" (click)="null">Deactivate Account</button>
+      <button mat-flat-button color="primary" (click)="null">Edit Info</button>
+    </mat-card-actions>
+  </mat-card>
+
+
+  <mat-card class="docs-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon class="align-icon">folder_shared</mat-icon> 
+        My Documents
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="slideshow-container">
+        
+        <div class="slides-wrapper">
+          <div class="slide-item" *ngFor="let doc of documents">
+            <div class="doc-preview">
+              <mat-icon>description</mat-icon>
+            </div>
+            <p>Document_{{doc}}.pdf</p>
+          </div>
+        </div>
+
+        <button mat-icon-button class="nav-btn left" disabled>
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+        <button mat-icon-button class="nav-btn right">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+</div>

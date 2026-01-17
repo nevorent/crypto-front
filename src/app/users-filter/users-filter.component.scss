@@ -1,0 +1,31 @@
+.sidebar-container {
+    background: #fff;
+    border-right: 1px solid #e0e0e0;
+}
+
+.sidebar-header {
+    padding: 16px;
+    flex: 0 0 auto;
+    background: #fafafa;
+    border-bottom: 1px solid #eee;
+}
+
+.sidebar-list {
+    flex: 1;
+    overflow-y: auto; /* ENABLE SCROLLING HERE */
+}
+
+/* 4. Visual tweaks */
+.full-width { width: 100%; }
+
+.active {
+    background-color: #ffebee;
+    border-left: 4px solid #d32f2f;
+}
+
+.empty-state {
+    padding: 20px;
+    text-align: center;
+    color: #999;
+    font-size: 0.9rem;
+}
