@@ -11,8 +11,5 @@ import { AuthService } from '../services/auth/auth.service';
 export class HomeComponent implements  OnInit {
   private authService = inject(AuthService);
   ngOnInit(): void {
-    this.authService.getPayload().subscribe(data => {
-      console.log(data);
-    });
   }
 }

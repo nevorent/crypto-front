@@ -1,7 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatCardHeader, MatCardContent, MatCardActions, MatCard } from '@angular/material/card';
 import { MatFormField, MatInput, MatLabel } from '@angular/material/input';
 import { MatButton } from '@angular/material/button';
+import { AuthService } from '../services/auth/auth.service';
+import { LoginUser } from '../models/login-user.model';
+import { FormsModule } from '@angular/forms';
+import { SpinnerService } from '../services/spinner/spinner.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-login',
@@ -14,10 +19,35 @@ import { MatButton } from '@angular/material/button';
     MatFormField,
     MatInput,
     MatLabel,
-    MatButton
+    MatButton,
+    FormsModule
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
 })
 export class LoginComponent {
+  private authService = inject(AuthService);
+  private spinnerService = inject(SpinnerService);
+  private snackBar = inject(MatSnackBar);
+
+  protected loginUser: LoginUser = {
+    username: '',
+    password: ''
+  }
+
+  public login() {
+    this.spinnerService.show();
+    this.authService.logInUser(this.loginUser).subscribe({
+      next: (response) => {
+        console.log('Log-In successful', response);
+        this.spinnerService.hide();
+        this.snackBar.open('Log-In successful!', 'Dismiss', { duration: 3000 });
+      },
+      error: (error) => {
+        console.error('Log-in failed', error);
+        this.spinnerService.hide();
+        this.snackBar.open('Log-in failed. Please try again.', 'Dismiss', { duration: 3000 });
+      }
+    });
+  }
 }

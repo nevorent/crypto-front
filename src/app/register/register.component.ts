@@ -35,20 +35,20 @@ export class RegisterComponent {
     username: '',
     password: ''
   }
-  
-public register() {
-  this.spinnerService.show();
-  this.authService.registerUser(this.registerUser).subscribe({
-    next: (response) => {
-      console.log('Registration successful', response);
-      this.spinnerService.hide();
-      this.snackBar.open('Registration successful!', 'Dismiss', { duration: 3000 });
-    },
-    error: (error) => {
-      console.error('Registration failed', error);
-      this.spinnerService.hide();
-      this.snackBar.open('Registration failed. Please try again.', 'Dismiss', { duration: 3000 });
-    }
-  });
-}
+
+  public register() {
+    this.spinnerService.show();
+    this.authService.registerUser(this.registerUser).subscribe({
+      next: (response) => {
+        console.log('Registration successful', response);
+        this.spinnerService.hide();
+        this.snackBar.open('Registration successful!', 'Dismiss', { duration: 3000 });
+      },
+      error: (error) => {
+        console.error('Registration failed', error);
+        this.spinnerService.hide();
+        this.snackBar.open('Registration failed. Please try again.', 'Dismiss', { duration: 3000 });
+      }
+    });
+  }
 }
