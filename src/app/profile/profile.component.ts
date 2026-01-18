@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
 import { User } from '../models/user.model';
 import { UserService } from '../services/user/user.service';
 import { CommonModule, DatePipe } from '@angular/common';
@@ -12,6 +12,10 @@ import { SpinnerService } from '../services/spinner/spinner.service';
 import { Document } from '../models/document.model';
 import { MatDialog } from '@angular/material/dialog';
 import { DocumentDialogComponent } from '../document-dialog/document-dialog.component';
+import { DocumentService } from '../services/document/document.service';
+import { IdentityDialogComponent } from '../identity-dialog/identity-dialog.component';
+import { AuthService } from '../services/auth/auth.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-profile',
@@ -30,27 +34,17 @@ import { DocumentDialogComponent } from '../document-dialog/document-dialog.comp
 })
 export class ProfileComponent implements OnInit {
   private userService = inject(UserService);
-  private router = inject(Router);
+  private authService = inject(AuthService);
+  private documentService = inject(DocumentService);
   private spinnerService = inject(SpinnerService);
+  private router = inject(Router);
   private dialog = inject(MatDialog);
+  private snackBar = inject(MatSnackBar);
+
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+
   private user?: User;
-  protected documents: Document[] = [
-    {
-      id: 1,
-      filename: "Document1",
-      status: "signed"
-    } as Document,
-    {
-      id: 2,
-      filename: "Document2",
-      status: "pending"
-    } as Document,
-    {
-      id: 3,
-      filename: "Document3",
-      status: "pending"
-    } as Document
-  ];
+  protected documents: Document[] = [];
 
   ngOnInit(): void {
     this.spinnerService.show();
@@ -60,9 +54,11 @@ export class ProfileComponent implements OnInit {
       return;
     }
     this.userService.getUser().subscribe((user) => {
-      console.log(user);
       this.user = user;
-      this.spinnerService.hide();
+      this.documentService.getDocuments().subscribe((docs) => {
+        this.documents = docs;
+        this.spinnerService.hide();
+      });
     });
   }
 
@@ -85,8 +81,59 @@ export class ProfileComponent implements OnInit {
   openDocumentDetails(doc: Document) {
     this.dialog.open(DocumentDialogComponent, {
       width: '450px',
-      data: doc, // <--- This passes the input to the dialog
-      autoFocus: false // Optional: prevents auto-focusing the first button
+      data: doc,
+      autoFocus: false 
+    });
+  }
+
+  triggerFileSelect() {
+    this.fileInput.nativeElement.click();
+  }
+
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
+      this.uploadFile(file);
+      input.value = ''; 
+    }
+  }
+
+  uploadFile(file: File) {
+    this.documentService.uploadDocument(file).subscribe({
+      next: (uploadedDoc) => {
+        console.log('Upload Success:', uploadedDoc);
+        this.documents.push(uploadedDoc);
+      },
+      error: (err) => {
+        console.error('Upload Failed', err);
+      }
+    });
+  }
+
+  openIdentityDialog() {
+    const dialogRef = this.dialog.open(IdentityDialogComponent, {
+      width: '450px',
+      autoFocus: false 
+    });
+
+    dialogRef.afterClosed().subscribe((keySize) => {
+      this.spinnerService.show();
+      if (keySize) {
+        this.authService.regenerateIdentity(keySize).subscribe({
+          next: (result) => {
+            if (result) {
+              this.snackBar.open('Identity regeneration was successful!', 'Dismiss');
+            }
+            this.spinnerService.hide();
+          },
+          error: (err) => {
+            this.snackBar.open('An error occurred during identity regeneration. Please try again.', 'Dismiss');
+            this.spinnerService.hide();
+          }
+        })
+      }
     });
   }
 }

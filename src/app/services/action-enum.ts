@@ -1,5 +1,6 @@
 export enum ActionEnum {
     Authentication = 'auth',
     User = 'users',
-    Message = 'messages'
+    Message = 'messages',
+    Document = 'documents'
 }

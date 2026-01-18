@@ -10,6 +10,7 @@ import {
   MatDialogModule, 
   MatDialog
 } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-document-dialog',
@@ -25,20 +26,17 @@ import {
   styleUrl: './document-dialog.component.scss'
 })
 export class DocumentDialogComponent {
+  private router = inject(Router);
   constructor(
-    // Receives the data passed from the parent
     @Inject(MAT_DIALOG_DATA) public data: Document,
     private dialogRef: MatDialogRef<DocumentDialogComponent>
   ) {}
 
   signDocument() {
-    console.log('Signing document:', this.data.id);
-    // You might want to close and pass a result back:
-    // this.dialogRef.close('signed');
+    this.router.navigate([`/sign/${this.data.id}`]);
+    this.dialogRef.close();
   }
 
   deleteDocument() {
-    console.log('Deleting document:', this.data.id);
-    // this.dialogRef.close('deleted');
   }
 }

@@ -11,7 +11,9 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   var newHeaders = req.headers;
 
-  if (!req.headers.has('Content-Type') && !(req.body instanceof HttpParams)) {
+  if (!req.headers.has('Content-Type') 
+      && !(req.body instanceof HttpParams)
+      && !(req.body instanceof FormData)) {
     newHeaders = newHeaders.set('Content-Type', 'application/json');
   }
 

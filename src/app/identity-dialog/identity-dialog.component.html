@@ -1,0 +1,43 @@
+<div class="flex items-center justify-between p-4 border-b border-gray-200">
+  <h2 mat-dialog-title class="!m-0 text-xl font-bold text-gray-800 flex items-center gap-2">
+    <mat-icon class="text-blue-600">fingerprint</mat-icon>
+    Regenerate Identity
+  </h2>
+  
+  <button mat-icon-button (click)="cancel()" aria-label="Close dialog">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<mat-dialog-content class="!p-6 min-w-[350px]">
+  
+  <div class="flex flex-col gap-4">
+    <p class="text-sm text-gray-600">
+      Select a new key size for your digital identity. 
+      <span class="text-red-500 font-medium block mt-1">
+        Warning: This will invalidate your previous keys.
+      </span>
+    </p>
+
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Key Size (Bits)</mat-label>
+      <mat-select [(ngModel)]="selectedKeySize">
+        <mat-option *ngFor="let size of keySizes" [value]="size">
+          {{ size }} bits
+        </mat-option>
+      </mat-select>
+      <mat-icon matSuffix>vpn_key</mat-icon>
+    </mat-form-field>
+    
+  </div>
+
+</mat-dialog-content>
+
+<mat-divider></mat-divider>
+
+<mat-dialog-actions align="center" class="!p-4 gap-2">
+  <button mat-flat-button color="primary" (click)="regenerate()">
+    <mat-icon>refresh</mat-icon>
+    Regenerate
+  </button>
+</mat-dialog-actions>

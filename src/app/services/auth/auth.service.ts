@@ -7,6 +7,7 @@ import { User } from '../../models/user.model';
 import { LoginUser } from '../../models/login-user.model';
 import { LoginResponse } from '../../models/login-response.model';
 import { ActionEnum } from '../action-enum';
+import { IdentityResponse } from '../../models/identity-response';
 
 @Injectable({
   providedIn: 'root'
@@ -60,6 +61,23 @@ export class AuthService {
   public logOut() {
     this.deleteCookie('access_token');
     this.deleteCookie('token_type');
+  }
+
+  public regenerateIdentity(keySize: number) {
+    this.specificServicePath = 'pki/regenerate';
+    const body = JSON.stringify({
+      key_size: keySize
+    });
+    return this.http.post<IdentityResponse>(`${this.commonServicePath}/${this.specificServicePath}`, body).pipe(
+      tap((response) => {
+        if (response.private_key && response.certificate) {
+          this.downloadFile(response.private_key, 'new_private_key.pem');
+        }
+      }),
+      map((response) => {
+        return true; 
+      })
+    );
   }
 
   private downloadFile(content: string, filename: string) {

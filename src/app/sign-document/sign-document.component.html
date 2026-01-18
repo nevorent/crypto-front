@@ -1,0 +1,71 @@
+<div class="flex h-screen w-full bg-gray-100 overflow-hidden">
+
+  <div class="flex-1 h-full bg-gray-500 relative flex flex-col items-center justify-center">
+    
+    <div *ngIf="pdfUrl; else loading" class="w-full h-full">
+      <object [data]="pdfUrl" type="application/pdf" class="w-full h-full">
+        <div class="flex flex-col items-center justify-center h-full text-white">
+          <mat-icon class="text-6xl h-16 w-16 mb-4">error_outline</mat-icon>
+          <p>Your browser does not support inline PDF viewing.</p>
+        </div>
+      </object>
+    </div>
+
+    <ng-template #loading>
+      <div class="text-white flex flex-col items-center">
+        <mat-icon class="animate-spin text-4xl mb-2">autorenew</mat-icon>
+        <p>Loading Document...</p>
+      </div>
+    </ng-template>
+
+  </div>
+
+
+  <div class="w-80 bg-white shadow-xl z-10 flex flex-col border-l border-gray-200">
+    
+    <div class="p-6 border-b border-gray-100">
+      <h2 class="text-xl font-bold text-gray-800">Sign Document</h2>
+      <p class="text-sm text-gray-500 mt-1">ID: #{{ documentId }}</p>
+    </div>
+
+    <div class="flex-1 p-6 space-y-6">
+      
+      <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
+        <div class="flex items-start gap-3">
+          <mat-icon class="text-blue-600 mt-0.5">info</mat-icon>
+          <p class="text-sm text-blue-800">
+            Please review the document on the left before applying your digital signature.
+          </p>
+        </div>
+      </div>
+
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Padding Mode</mat-label>
+        <mat-select [(ngModel)]="paddingMode">
+          <mat-option *ngFor="let opt of paddingOptions" [value]="opt">
+            {{ opt }}
+          </mat-option>
+        </mat-select>
+        <mat-hint>Select cryptographic padding</mat-hint>
+      </mat-form-field>
+
+    </div>
+
+    <div class="p-6 bg-gray-50 border-t border-gray-200 flex flex-col gap-3">
+      
+      <button mat-flat-button color="primary" 
+              class="w-full !py-6 !text-lg" 
+              (click)="signDocument()">
+        <mat-icon>edit_document</mat-icon>
+        Sign Document
+      </button>
+
+      <button mat-stroked-button color="warn" class="w-full" (click)="cancel()">
+        Cancel
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
