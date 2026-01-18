@@ -1,7 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { User } from '../models/user.model';
+import { MatDialog } from '@angular/material/dialog';
+import { DocumentSelectorDialogComponent } from '../document-selector-dialog/document-selector-dialog.component';
+import { Document } from '../models/document.model';
+import { DocumentService } from '../services/document/document.service';
+import { MessageService } from '../services/message/message.service';
+import { SpinnerService } from '../services/spinner/spinner.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-message-box',
@@ -10,22 +17,59 @@ import { User } from '../models/user.model';
   templateUrl: './message-box.component.html',
   styleUrl: './message-box.component.scss'
 })
-export class MessageBoxComponent {
-  messageText: string = '';
+export class MessageBoxComponent implements OnInit{
+  private documentService = inject(DocumentService);
+  private messageService = inject(MessageService);
+  private spinnerService = inject(SpinnerService);
+  private snackBar = inject(MatSnackBar);
+  private dialog = inject(MatDialog);
+  private documents: Document[] = [];
 
   @Input() receiver?: User;
-  @Output() messageSent = new EventEmitter<string>();
-  @Output() fileAttached = new EventEmitter<void>();
+  @Input() sender?: User;
 
-  sendMessage() {
-    if (!this.messageText.trim()) return; // Don't send empty messages
+  protected messageText: string = '';
+  protected documentId?: number;
 
-    this.messageSent.emit(this.messageText);
-    this.messageText = ''; // Clear input after sending
+  ngOnInit(): void {
+    this.documentService.getDocuments().subscribe((documents) => {
+      this.documents = documents;
+    });
   }
 
-  attachFile() {
-    this.fileAttached.emit(); // Just a trigger for now
-    console.log('Attach file clicked');
+  sendFileAndMessage() {
+    this.spinnerService.show();
+    if (this.receiver != null && this.documentId != null) {
+      this.messageService.sendMessage(this.receiver?.id, this.documentId, this.messageText != '' ? this.messageText : undefined).subscribe({
+        next: () => {
+          this.spinnerService.hide();
+          this.resetFields();
+        },
+        error: (err) => {
+          this.spinnerService.hide();
+          this.snackBar.open('An error has occurred: ' + err, 'Dismiss', { duration: 4000 });
+          this.resetFields();
+        }
+      });
+    }
+  }
+
+  openSelectDocumentDialog() {
+    const dialogRef = this.dialog.open(DocumentSelectorDialogComponent, {
+      width: '450px',
+      data: this.documents,
+      autoFocus: false
+    });
+
+    dialogRef.afterClosed().subscribe((selectedId: number | undefined) => {
+      if (selectedId) {
+        this.documentId = selectedId;
+      }
+    });
+  }
+
+  private resetFields() {
+    this.documentId = undefined;
+    this.messageText = '';
   }
 }

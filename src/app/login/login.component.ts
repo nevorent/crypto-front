@@ -41,7 +41,6 @@ export class LoginComponent {
     this.spinnerService.show();
     this.authService.logInUser(this.loginUser).subscribe({
       next: (response) => {
-        console.log('Log-In successful', response);
         this.spinnerService.hide();
         this.snackBar.open('Log-In successful!', 'Dismiss', { duration: 3000 })
           .afterDismissed()

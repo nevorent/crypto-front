@@ -29,7 +29,7 @@ export class MessageService {
     );
   }
 
-  public sendMessage(receiverId: number, documentId: number, content: string) {
+  public sendMessage(receiverId: number, documentId: number, content?: string) {
     this.specificServicePath = 'send';
     const body = JSON.stringify({
       receiver_id: receiverId,

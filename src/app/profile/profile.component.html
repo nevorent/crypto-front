@@ -46,26 +46,35 @@
     </mat-card-header>
 
     <mat-card-content>
-      <div class="slideshow-container">
-        
-        <div class="slides-wrapper">
-          <div class="slide-item" *ngFor="let doc of documents" (click)="openDocumentDetails(doc)">
-            <div class="doc-preview">
-              <mat-icon>description</mat-icon>
+    
+    <div class="py-4"> 
+      <ng-carousel 
+        [config]="carouselConfig"
+        #carouselRef="ngCarousel"
+      >
+        <ng-template [ngCarouselSlide]="carouselRef" let-doc>
+          
+          <div class="slide-item min-w-[150px] p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition text-center mx-2"
+               (click)="openDocumentDetails(doc)">
+            
+            <div class="doc-preview bg-red-50 text-red-500 w-12 h-12 mx-auto rounded-full flex items-center justify-center mb-2">
+               <mat-icon>description</mat-icon>
             </div>
-            <p>{{doc.filename}}</p>
+            
+            <p class="truncate w-full text-sm font-medium" [matTooltip]="doc.filename">
+              {{doc.filename}}
+            </p>
           </div>
-        </div>
+        </ng-template>
+      </ng-carousel>
 
-        <button mat-icon-button class="nav-btn left" disabled>
-          <mat-icon>chevron_left</mat-icon>
-        </button>
-        <button mat-icon-button class="nav-btn right">
-          <mat-icon>chevron_right</mat-icon>
-        </button>
-
+      <div *ngIf="documents.length === 0" class="text-center text-gray-400 py-8">
+        No documents found.
       </div>
-    </mat-card-content>
+
+    </div>
+
+  </mat-card-content>
     <mat-card-actions class="flex justify-evenly mt-4">
       <button mat-flat-button color="primary" (click)="triggerFileSelect()">Upload Document</button>
       <input type="file" 

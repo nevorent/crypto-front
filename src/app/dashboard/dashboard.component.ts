@@ -42,7 +42,6 @@ export class DashboardComponent implements OnInit{
   protected changeReceiver(receiver: User) {
     this.receiver = receiver;
     this.messageService.getConversation(receiver.id).subscribe((messages) => {
-      console.log(messages);
       this.messages = messages;
     });
   }

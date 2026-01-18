@@ -16,6 +16,8 @@ import { DocumentService } from '../services/document/document.service';
 import { IdentityDialogComponent } from '../identity-dialog/identity-dialog.component';
 import { AuthService } from '../services/auth/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { CarouselModule, CarouselConfig } from 'ng-carousel-cdk';
 
 @Component({
   selector: 'app-profile',
@@ -27,6 +29,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     MatIconModule, 
     MatChipsModule,
     MatDividerModule,
+    MatTooltipModule,
+    CarouselModule,
     DatePipe
   ],
   templateUrl: './profile.component.html',
@@ -42,9 +46,20 @@ export class ProfileComponent implements OnInit {
   private snackBar = inject(MatSnackBar);
 
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('scrollContainer') scrollContainer!: ElementRef;
 
   private user?: User;
   protected documents: Document[] = [];
+
+  carouselConfig: CarouselConfig<Document> = {
+    items: [],
+    slideWidth: 160,
+    widthMode: 'px' as any, 
+    alignMode: 'center' as any,
+    autoplayEnabled: false,
+    dragEnabled: true,
+    shouldLoop: false,
+  };
 
   ngOnInit(): void {
     this.spinnerService.show();
@@ -55,10 +70,7 @@ export class ProfileComponent implements OnInit {
     }
     this.userService.getUser().subscribe((user) => {
       this.user = user;
-      this.documentService.getDocuments().subscribe((docs) => {
-        this.documents = docs;
-        this.spinnerService.hide();
-      });
+      this.refreshDocuments();
     });
   }
 
@@ -78,7 +90,7 @@ export class ProfileComponent implements OnInit {
     return this.user?.createdAt;
   }
 
-  openDocumentDetails(doc: Document) {
+  openDocumentDetails(doc?: Document) {
     const dialogRef = this.dialog.open(DocumentDialogComponent, {
       width: '450px',
       data: doc,
@@ -86,6 +98,7 @@ export class ProfileComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe((documentId) => {
       this.documents = this.documents.filter((doc) => doc.id != documentId);
+      this.updateCarousel();
     });
   }
 
@@ -106,8 +119,8 @@ export class ProfileComponent implements OnInit {
   uploadFile(file: File) {
     this.documentService.uploadDocument(file).subscribe({
       next: (uploadedDoc) => {
-        console.log('Upload Success:', uploadedDoc);
         this.documents.push(uploadedDoc);
+        this.updateCarousel()
       },
       error: (err) => {
         console.error('Upload Failed', err);
@@ -122,6 +135,9 @@ export class ProfileComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((tuple: {keySize: number, keyPassword: string}) => {
+      if (!tuple) {
+        return;
+      }
       this.spinnerService.show();
       if (tuple.keySize) {
         this.authService.regenerateIdentity(tuple.keySize, tuple.keyPassword).subscribe({
@@ -138,5 +154,20 @@ export class ProfileComponent implements OnInit {
         })
       }
     });
+  }
+
+  refreshDocuments() {
+    this.documentService.getDocuments().subscribe((docs) => {
+      this.documents = docs;
+      this.updateCarousel();
+      this.spinnerService.hide();
+    });
+  }
+
+  updateCarousel() {
+    this.carouselConfig = {
+      ...this.carouselConfig,
+      items: this.documents
+    };
   }
 }

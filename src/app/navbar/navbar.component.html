@@ -1,6 +1,9 @@
 <mat-toolbar color="primary" class="navbar">
 
-  <span routerLink="/" style="cursor: pointer;">CryptoProject</span>
+  <div class="flex items-center gap-2 cursor-pointer select-none" routerLink="/">
+    <mat-icon class="text-blue-600">security</mat-icon>
+    <span class="font-bold text-lg tracking-tight text-gray-800">SecureDoc</span>
+  </div>
 
   <span class="spacer"></span>
 
@@ -9,7 +12,7 @@
   <button *ngIf="!userService.isLoggedIn()" mat-button routerLink="/login">Authentication</button>
 
   <button mat-button routerLink="/dashboard">Dashboard</button>
-  
+
   <button mat-icon-button routerLink="/profile">
     <mat-icon>account_circle</mat-icon>
   </button>

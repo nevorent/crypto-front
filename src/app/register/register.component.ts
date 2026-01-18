@@ -40,7 +40,6 @@ export class RegisterComponent {
     this.spinnerService.show();
     this.authService.registerUser(this.registerUser).subscribe({
       next: (response) => {
-        console.log('Registration successful', response);
         this.spinnerService.hide();
         this.snackBar.open('Registration successful!', 'Dismiss', { duration: 3000 });
       },

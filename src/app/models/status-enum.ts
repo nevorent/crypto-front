@@ -1,4 +1,4 @@
 export enum StatusEnum {
-    Valid = "valid",
-    Invalid = "invalid"
+    Valid = "VALID",
+    Invalid = "INVALID"
 }
