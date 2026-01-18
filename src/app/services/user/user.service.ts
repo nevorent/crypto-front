@@ -3,15 +3,16 @@ import { inject, Injectable } from '@angular/core';
 import { User } from '../../models/user.model';
 import { map } from 'rxjs';
 import { UserResponse } from '../../models/user-response.model';
+import { ActionEnum } from '../action-enum';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
   private http = inject(HttpClient);
-  private commonServicePath = 'users/';
+  private commonServicePath = ActionEnum.User;
   private specificServicePath = '';
-  
+
   constructor() { }
 
   public isLoggedIn(): boolean {
@@ -20,7 +21,7 @@ export class UserService {
 
   public getUser() {
     this.specificServicePath = 'me';
-    return this.http.get<UserResponse>(this.commonServicePath + this.specificServicePath).pipe(
+    return this.http.get<UserResponse>(`${this.commonServicePath}/${this.specificServicePath}`).pipe(
       map((response): User => {
         return {
           id: response.id,
@@ -34,7 +35,7 @@ export class UserService {
 
   public getUsers() {
     this.specificServicePath = '';
-    return this.http.get<UserResponse[]>(this.commonServicePath + this.specificServicePath).pipe(
+    return this.http.get<UserResponse[]>(`${this.commonServicePath}/${this.specificServicePath}`).pipe(
       map((userResponses) => {
         return userResponses.map(user => ({
           id: user.id,

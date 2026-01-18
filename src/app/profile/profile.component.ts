@@ -9,6 +9,9 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
 import { Router } from '@angular/router';
 import { SpinnerService } from '../services/spinner/spinner.service';
+import { Document } from '../models/document.model';
+import { MatDialog } from '@angular/material/dialog';
+import { DocumentDialogComponent } from '../document-dialog/document-dialog.component';
 
 @Component({
   selector: 'app-profile',
@@ -29,13 +32,32 @@ export class ProfileComponent implements OnInit {
   private userService = inject(UserService);
   private router = inject(Router);
   private spinnerService = inject(SpinnerService);
+  private dialog = inject(MatDialog);
   private user?: User;
-  protected documents = [1, 2, 3, 4, 5, 6, 7];
+  protected documents: Document[] = [
+    {
+      id: 1,
+      filename: "Document1",
+      status: "signed"
+    } as Document,
+    {
+      id: 2,
+      filename: "Document2",
+      status: "pending"
+    } as Document,
+    {
+      id: 3,
+      filename: "Document3",
+      status: "pending"
+    } as Document
+  ];
 
   ngOnInit(): void {
     this.spinnerService.show();
     if (!this.userService.isLoggedIn()) {
       this.router.navigate(['/login']);
+      this.spinnerService.hide();
+      return;
     }
     this.userService.getUser().subscribe((user) => {
       console.log(user);
@@ -58,5 +80,13 @@ export class ProfileComponent implements OnInit {
 
   public get createdAt() {
     return this.user?.createdAt;
+  }
+
+  openDocumentDetails(doc: Document) {
+    this.dialog.open(DocumentDialogComponent, {
+      width: '450px',
+      data: doc, // <--- This passes the input to the dialog
+      autoFocus: false // Optional: prevents auto-focusing the first button
+    });
   }
 }

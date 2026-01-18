@@ -7,6 +7,7 @@ import { LoginUser } from '../models/login-user.model';
 import { FormsModule } from '@angular/forms';
 import { SpinnerService } from '../services/spinner/spinner.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -29,6 +30,7 @@ export class LoginComponent {
   private authService = inject(AuthService);
   private spinnerService = inject(SpinnerService);
   private snackBar = inject(MatSnackBar);
+  private router = inject(Router);
 
   protected loginUser: LoginUser = {
     username: '',
@@ -41,7 +43,11 @@ export class LoginComponent {
       next: (response) => {
         console.log('Log-In successful', response);
         this.spinnerService.hide();
-        this.snackBar.open('Log-In successful!', 'Dismiss', { duration: 3000 });
+        this.snackBar.open('Log-In successful!', 'Dismiss', { duration: 3000 })
+          .afterDismissed()
+          .subscribe(() => {
+            this.router.navigate(['/']);
+          });
       },
       error: (error) => {
         console.error('Log-in failed', error);

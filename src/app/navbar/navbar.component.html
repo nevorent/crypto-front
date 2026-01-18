@@ -4,7 +4,9 @@
 
   <span class="spacer"></span>
 
-  <button mat-button routerLink="/login">Authentication</button>
+  <button *ngIf="userService.isLoggedIn()" mat-button (click)="logOut()"> Log Out </button>
+
+  <button *ngIf="!userService.isLoggedIn()" mat-button routerLink="/login">Authentication</button>
 
   <button mat-button routerLink="/dashboard">Dashboard</button>
   

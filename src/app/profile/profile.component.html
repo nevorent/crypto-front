@@ -48,11 +48,11 @@
       <div class="slideshow-container">
         
         <div class="slides-wrapper">
-          <div class="slide-item" *ngFor="let doc of documents">
+          <div class="slide-item" *ngFor="let doc of documents" (click)="openDocumentDetails(doc)">
             <div class="doc-preview">
               <mat-icon>description</mat-icon>
             </div>
-            <p>Document_{{doc}}.pdf</p>
+            <p>{{doc.filename}}</p>
           </div>
         </div>
 
@@ -65,6 +65,10 @@
 
       </div>
     </mat-card-content>
+    <mat-card-actions class="flex justify-evenly mt-4">
+      <button mat-flat-button color="primary" (click)="null">Upload Document</button>
+      <!-- <button mat-flat-button color="primary" (click)="null">Edit Info</button> -->
+    </mat-card-actions>
   </mat-card>
 
 </div>
