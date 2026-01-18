@@ -25,7 +25,6 @@
     
     <div class="p-6 border-b border-gray-100">
       <h2 class="text-xl font-bold text-gray-800">Sign Document</h2>
-      <p class="text-sm text-gray-500 mt-1">ID: #{{ documentId }}</p>
     </div>
 
     <div class="flex-1 p-6 space-y-6">
@@ -48,6 +47,47 @@
         </mat-select>
         <mat-hint>Select cryptographic padding</mat-hint>
       </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Password (Optional)</mat-label>
+            <input matInput 
+                [type]="hidePassword ? 'password' : 'text'" 
+                [(ngModel)]="password"
+                placeholder="Enter private key password">
+            
+            <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" [attr.aria-label]="'Hide password'">
+            <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
+            <mat-hint>Unlock your key if encrypted</mat-hint>
+        </mat-form-field>
+        <div>
+    <label class="block text-xs font-medium text-gray-500 mb-2 uppercase tracking-wide">
+      Private Key Source
+    </label>
+    
+    <input type="file" #keyInput hidden accept=".pem,.key,.txt" (change)="onKeySelected($event)">
+
+    <div class="flex flex-col gap-2">
+      <button mat-stroked-button 
+              color="primary" 
+              class="w-full !py-6 border-dashed !border-2"
+              (click)="triggerKeyUpload()">
+        <mat-icon>vpn_key</mat-icon>
+        Upload Private Key
+      </button>
+
+        <div *ngIf="privateKeyFileName" 
+            class="flex items-center gap-2 text-green-700 bg-green-50 p-2 rounded border border-green-200 text-sm animate-fade-in">
+        <mat-icon class="text-base h-4 w-4">check_circle</mat-icon>
+        <span class="truncate font-medium">{{ privateKeyFileName }}</span>
+        
+        <button mat-icon-button class="ml-auto !h-6 !w-6 flex items-center justify-center" 
+                (click)="privateKeyFileName = undefined; privateKeyFile = undefined">
+            <mat-icon class="text-sm">close</mat-icon>
+        </button>
+        </div>
+    </div>
+  </div>
 
     </div>
 

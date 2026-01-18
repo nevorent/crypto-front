@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -11,6 +11,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { DocumentService } from '../services/document/document.service';
 import { SpinnerService } from '../services/spinner/spinner.service';
+import { PaddingEnum } from './padding-enum';
 
 @Component({
   selector: 'app-sign-document',
@@ -37,12 +38,18 @@ export class SignDocumentComponent implements OnInit, OnDestroy{
   private snackBar = inject(MatSnackBar);
 
   private objectUrl?: string;
+  protected password: string = '';
+  protected hidePassword: boolean = true;
+
+  @ViewChild('keyInput') keyInput!: ElementRef<HTMLInputElement>;
 
   documentId: string | null = null;
   pdfUrl: SafeResourceUrl | null = null;
+  privateKeyFile?: File;
+  privateKeyFileName?: string;
   
-  paddingMode: string = 'PKCS1'; 
-  paddingOptions = ['PKCS1', 'PSS', 'OAEP'];
+  paddingMode: string = PaddingEnum.PKCS; 
+  paddingOptions = [ PaddingEnum.PKCS, PaddingEnum.PSS ];
 
   ngOnInit() {
     this.documentId = this.route.snapshot.paramMap.get('id');
@@ -62,13 +69,40 @@ export class SignDocumentComponent implements OnInit, OnDestroy{
         this.spinnerService.hide();
       },
       error: (err) => {
-        this.snackBar.open('Failed to load PDF: ' + err, 'Disminss');
+        this.snackBar.open('Failed to load PDF: ' + err, 'Dismiss');
         this.spinnerService.hide();
       }
     });
   }
 
   signDocument() {
+    this.spinnerService.show();
+    if (this.documentId && this.privateKeyFile &&  this.password && this.paddingMode) {
+      this.documentService.signDocument(Number.parseInt(this.documentId), this.privateKeyFile, this.password, this.paddingMode).subscribe({
+        next: (signResponse) => {
+          this.spinnerService.hide();
+          this.snackBar.open(signResponse.message, 'Dismiss', { duration: 3000 }).afterDismissed().subscribe(() => {
+            this.router.navigate(['/profile']);
+          });
+        },
+        error: (err) => {
+          this.snackBar.open('There was an error signing the document. Please try again later.', 'Dismiss', { duration: 4000 });
+          this.spinnerService.hide();
+        }
+      });
+    }
+  }
+
+  triggerKeyUpload() {
+    this.keyInput.nativeElement.click();
+  }
+
+  onKeySelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.privateKeyFile = input.files[0];
+      this.privateKeyFileName = this.privateKeyFile.name;
+    }
   }
 
   cancel() {

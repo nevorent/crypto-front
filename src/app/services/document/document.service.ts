@@ -4,6 +4,9 @@ import { ActionEnum } from '../action-enum';
 import { DocumentResponse } from '../../models/document-response.model';
 import { map, Observable } from 'rxjs';
 import { Document } from '../../models/document.model';
+import { SignResponse } from '../../models/sign-response.model';
+import { DeleteResponse } from '../../models/delete-response.model';
+import { VerifyResponse } from '../../models/verify-response.model';
 
 @Injectable({
   providedIn: 'root'
@@ -50,5 +53,24 @@ export class DocumentService {
     return this.http.get(`${this.commonServicePath}/${documentId}/${this.specificServicePath}`, {
       responseType: 'blob'
     });
+  }
+
+  public signDocument(documentId: number, file: File, keyPassword: string, paddingMode: string) {
+    this.specificServicePath = 'sign';
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('key_password', keyPassword);
+    formData.append('padding_mode', paddingMode);
+
+    return this.http.post<SignResponse>(`${this.commonServicePath}/${documentId}/${this.specificServicePath}`, formData);
+  }
+
+  public verifyDocument(documentId: number, senderId: number) {
+    this.specificServicePath = 'verify';
+    return this.http.get<VerifyResponse>(`${this.commonServicePath}/${documentId}/${this.specificServicePath}/${senderId}`);
+  }
+
+  public deleteDocument(documentId: number) {
+    return this.http.delete<DeleteResponse>(`${this.commonServicePath}/${documentId}`);
   }
 }

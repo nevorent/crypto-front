@@ -79,10 +79,13 @@ export class ProfileComponent implements OnInit {
   }
 
   openDocumentDetails(doc: Document) {
-    this.dialog.open(DocumentDialogComponent, {
+    const dialogRef = this.dialog.open(DocumentDialogComponent, {
       width: '450px',
       data: doc,
       autoFocus: false 
+    });
+    dialogRef.afterClosed().subscribe((documentId) => {
+      this.documents = this.documents.filter((doc) => doc.id != documentId);
     });
   }
 
@@ -118,18 +121,18 @@ export class ProfileComponent implements OnInit {
       autoFocus: false 
     });
 
-    dialogRef.afterClosed().subscribe((keySize) => {
+    dialogRef.afterClosed().subscribe((tuple: {keySize: number, keyPassword: string}) => {
       this.spinnerService.show();
-      if (keySize) {
-        this.authService.regenerateIdentity(keySize).subscribe({
+      if (tuple.keySize) {
+        this.authService.regenerateIdentity(tuple.keySize, tuple.keyPassword).subscribe({
           next: (result) => {
             if (result) {
-              this.snackBar.open('Identity regeneration was successful!', 'Dismiss');
+              this.snackBar.open('Identity regeneration was successful!', 'Dismiss', { duration: 3000 });
             }
             this.spinnerService.hide();
           },
           error: (err) => {
-            this.snackBar.open('An error occurred during identity regeneration. Please try again.', 'Dismiss');
+            this.snackBar.open('An error occurred during identity regeneration. Please try again.', 'Dismiss',{ duration: 4000 });
             this.spinnerService.hide();
           }
         })

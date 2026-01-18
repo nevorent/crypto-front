@@ -63,10 +63,11 @@ export class AuthService {
     this.deleteCookie('token_type');
   }
 
-  public regenerateIdentity(keySize: number) {
+  public regenerateIdentity(keySize: number, keyPassword: string) {
     this.specificServicePath = 'pki/regenerate';
     const body = JSON.stringify({
-      key_size: keySize
+      key_size: keySize,
+      key_password: keyPassword
     });
     return this.http.post<IdentityResponse>(`${this.commonServicePath}/${this.specificServicePath}`, body).pipe(
       tap((response) => {
