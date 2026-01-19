@@ -20,14 +20,13 @@
 
   </div>
 
-
-  <div class="w-80 bg-white shadow-xl z-10 flex flex-col border-l border-gray-200">
+  <div class="w-80 h-full bg-white shadow-xl z-10 flex flex-col border-l border-gray-200">
     
-    <div class="p-6 border-b border-gray-100">
-      <h2 class="text-xl font-bold text-gray-800">Sign Document</h2>
+    <div class="p-6 border-b border-gray-100 flex-none">
+      <h3 class="text-l font-bold text-gray-800">Sign</h3>
     </div>
 
-    <div class="flex-1 p-6 space-y-6">
+    <div class="flex-1 overflow-y-auto p-6 space-y-6 min-h-0">
       
       <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
         <div class="flex items-start gap-3">
@@ -48,50 +47,51 @@
         <mat-hint>Select cryptographic padding</mat-hint>
       </mat-form-field>
 
-        <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Password (Optional)</mat-label>
-            <input matInput 
-                [type]="hidePassword ? 'password' : 'text'" 
-                [(ngModel)]="password"
-                placeholder="Enter private key password">
-            
-            <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" [attr.aria-label]="'Hide password'">
+      <mat-form-field class="w-full">
+          <mat-label>Key password</mat-label>
+          <input matInput 
+              [type]="hidePassword ? 'password' : 'text'" 
+              [(ngModel)]="password"
+              placeholder="Enter private key password">
+          
+          <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" [attr.aria-label]="'Hide password'">
             <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
-            </button>
-            <mat-hint>Unlock your key if encrypted</mat-hint>
-        </mat-form-field>
-        <div>
-    <label class="block text-xs font-medium text-gray-500 mb-2 uppercase tracking-wide">
-      Private Key Source
-    </label>
-    
-    <input type="file" #keyInput hidden accept=".pem,.key,.txt" (change)="onKeySelected($event)">
+          </button>
+          <mat-hint>If you haven't regenerated a new identity, use your account password.</mat-hint>
+      </mat-form-field>
 
-    <div class="flex flex-col gap-2">
-      <button mat-stroked-button 
-              color="primary" 
-              class="w-full !py-6 border-dashed !border-2"
-              (click)="triggerKeyUpload()">
-        <mat-icon>vpn_key</mat-icon>
-        Upload Private Key
-      </button>
-
-        <div *ngIf="privateKeyFileName" 
-            class="flex items-center gap-2 text-green-700 bg-green-50 p-2 rounded border border-green-200 text-sm animate-fade-in">
-        <mat-icon class="text-base h-4 w-4">check_circle</mat-icon>
-        <span class="truncate font-medium">{{ privateKeyFileName }}</span>
+      <div>
+        <label class="block text-xs font-medium text-gray-500 mb-2 uppercase tracking-wide">
+          Private Key Source
+        </label>
         
-        <button mat-icon-button class="ml-auto !h-6 !w-6 flex items-center justify-center" 
-                (click)="privateKeyFileName = undefined; privateKeyFile = undefined">
-            <mat-icon class="text-sm">close</mat-icon>
-        </button>
+        <input type="file" #keyInput hidden accept=".pem,.key,.txt" (change)="onKeySelected($event)">
+
+        <div class="flex flex-col gap-2">
+          <button mat-stroked-button 
+                  color="primary" 
+                  class="w-full !py-6 border-dashed !border-2"
+                  (click)="triggerKeyUpload()">
+            <mat-icon>vpn_key</mat-icon>
+            Upload Private Key
+          </button>
+
+          <div *ngIf="privateKeyFileName" 
+              class="flex items-center gap-2 text-green-700 bg-green-50 p-2 rounded border border-green-200 text-sm animate-fade-in">
+            <mat-icon class="text-base h-4 w-4">check_circle</mat-icon>
+            <span class="truncate font-medium">{{ privateKeyFileName }}</span>
+            
+            <button mat-icon-button class="ml-auto !h-6 !w-6 flex items-center justify-center" 
+                    (click)="privateKeyFileName = undefined; privateKeyFile = undefined">
+              <mat-icon class="text-sm">close</mat-icon>
+            </button>
+          </div>
         </div>
-    </div>
-  </div>
+      </div>
 
     </div>
 
-    <div class="p-6 bg-gray-50 border-t border-gray-200 flex flex-col gap-3">
+    <div class="p-6 bg-gray-50 border-t border-gray-200 flex flex-col gap-3 flex-none">
       
       <button mat-flat-button color="primary" 
               class="w-full !py-6 !text-lg" 

@@ -47,4 +47,9 @@
             </button>
             </div>
     </div>
+    <div *ngIf="messages.length == 0 && receiver != null" class="flex-1 flex items-end justify-center pb-8 opacity-50">
+        <mat-hint class="text-gray-400 text-sm italic">
+            Begin your conversation with {{receiver.username}}.
+        </mat-hint>
+    </div>
 </div>

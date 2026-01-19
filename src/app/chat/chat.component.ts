@@ -10,27 +10,27 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { WebsocketService } from '../services/websocket/websocket.service';
 import { Subscription } from 'rxjs';
 import { WebsocketResponse } from '../models/websocket-response.model';
+import { MatFormFieldModule, MatHint } from "@angular/material/form-field";
+import { SpinnerService } from '../services/spinner/spinner.service';
 
 @Component({
   selector: 'app-chat',
   standalone: true,
   imports: [
-    CommonModule, 
-    DatePipe, 
-    MatIcon, 
-    MatTooltipModule
-  ],
+    CommonModule,
+    DatePipe,
+    MatIcon,
+    MatTooltipModule,
+    MatFormFieldModule,
+    MatHint
+],
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.scss'
 })
 export class ChatComponent implements OnInit, OnChanges {
-  ngOnInit(): void {
-    this.websocketSubscription = this.websocketService.messageReceived.subscribe((incomingData: any) => {
-      this.handleNewMessage(incomingData);
-    });
-  }
   private documentService = inject(DocumentService);
   private websocketService = inject(WebsocketService);
+  private spinnerService = inject(SpinnerService);
   private snackBar = inject(MatSnackBar);
 
   @Input() sender?: User;
@@ -41,8 +41,15 @@ export class ChatComponent implements OnInit, OnChanges {
 
   private websocketSubscription?: Subscription;
 
+  ngOnInit(): void {
+    this.websocketSubscription = this.websocketService.messageReceived.subscribe((incomingData: any) => {
+      this.handleNewMessage(incomingData);
+    });
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['messages']) {
+      this.spinnerService.show();
       this.scrollToBottom();
     }
   }
@@ -74,6 +81,7 @@ export class ChatComponent implements OnInit, OnChanges {
         element.scrollTop = element.scrollHeight;
       }
     }, 0);
+    this.spinnerService.hide();
   }
 
   private handleNewMessage(response: WebsocketResponse) {
