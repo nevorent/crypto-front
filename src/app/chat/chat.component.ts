@@ -74,6 +74,10 @@ export class ChatComponent implements OnInit, OnChanges {
     })
   }
 
+  protected downloadFile(documentId: number, fileName: string) {
+    this.documentService.downloadDocument(documentId, fileName);
+  }
+
   private scrollToBottom() {
     setTimeout(() => {
       if (this.scrollContainer) {

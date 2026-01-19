@@ -70,6 +70,31 @@ export class DocumentService {
     return this.http.get<VerifyResponse>(`${this.commonServicePath}/${documentId}/${this.specificServicePath}/${senderId}`);
   }
 
+  public downloadDocument(documentId: number, fileName: string) {
+    this.specificServicePath = 'download';
+    return this.http.get(`${this.commonServicePath}/${documentId}/${this.specificServicePath}`, {
+      responseType: 'blob'
+    }).subscribe({
+      next: (blob: Blob) => {
+        const blobUrl = window.URL.createObjectURL(blob);
+        
+        const link = document.createElement('a');
+        link.href = blobUrl;
+        link.download = fileName;
+        
+        document.body.appendChild(link);
+        link.click();
+
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(blobUrl);
+        return ''
+      },
+      error: (error) => {
+        console.error('Download failed', error);
+      }
+    });
+  }
+
   public deleteDocument(documentId: number) {
     return this.http.delete<DeleteResponse>(`${this.commonServicePath}/${documentId}`);
   }
